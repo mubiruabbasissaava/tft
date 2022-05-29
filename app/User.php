@@ -61,6 +61,13 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     public function findFacebookUserForPassport($token) {
         // Your logic here using Socialite to push user data from Facebook generated token.
     }
+
+
+    /*
+    *Function to create a new user wallet with Zero balance and the passed currenct e.g UGX,USD,RWD,KSH, EURO etc. 
+    *This function is called after the user is registered in the Application for the first time.
+    
+    */
     public function createWallet($currency)
     {
         $cipher = "aes-256-cbc"; 
@@ -93,7 +100,12 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         $respons = array("ResponseCode"=>"200","Result"=>"true","ResponseMsg"=>"Wallet Created Successfully!");
         return $respons;
     }
-    public function updateWallet($amount)
+
+    /* 
+    * Function to credit the user wallet with the given amount of money
+    *
+    */
+    public function creditWallet($amount)
     {
         $cipher = "aes-256-cbc"; 
         $usermail = $this->id;
@@ -128,6 +140,49 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     
 
     }
+
+    /* 
+    * Function to debit the user wallet with the given amount of money. 
+    *
+    */
+    public function debitWallet($amount)
+    {
+        $cipher = "aes-256-cbc"; 
+        $usermail = $this->id;
+        $ivpath = 'iv_'.$usermail.'.lic';
+        $keypath ='encryption_key_'.$usermail.'.lic';
+        
+        $cipher = "aes-256-cbc"; 
+        $encrypted_data = $this->wallet_balance;
+        if(!Storage::disk('local')->exists($keypath) Or !Storage::disk('local')->exists($ivpath))
+        {
+            $respons = array("ResponseCode"=>"200","Result"=>"false","ResponseMsg"=>"Wallet Decryption Failed!");
+            return $respons;
+        }
+        else
+        {
+            $encryption_key = base64_decode(Storage::disk('local')->get($keypath));
+            $iv = base64_decode(Storage::disk('local')->get($ivpath));
+            
+        }
+        $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, $iv); 
+        $wallet_balance = (floatval($decrypted_data) - floatval($amount));
+
+        
+        //Data to encrypt 
+        $wallet_balance = openssl_encrypt($wallet_balance, $cipher, $encryption_key, 0, $iv); 
+
+        $this->wallet_balance = $wallet_balance;
+        $this->save();
+
+        $respons = array("ResponseCode"=>"200","Result"=>"true","ResponseMsg"=>"Wallet Updated Successfully!");
+        return $respons;
+    
+
+    }
+    /*
+    *Function to get the decrypted user wallet balance in float.
+    */
     public function getWalletBalance()
     {
         $cipher = "aes-256-cbc"; 
@@ -152,6 +207,10 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         $wallet_balance = $decrypted_data;
         return $wallet_balance;
     }
+
+     /*
+    *Function to get the decrypted user wallet currency in string e.g UGX.
+    */
     public function getWalletCurrency()
     {
        
@@ -178,6 +237,11 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         return $wallet_currency;
     
     }
+
+     /*
+    *Function to get the user Favourite Tours in .
+    * @var array.
+    */
     public function getFavoriteToursAttribute()
     {
 
@@ -194,6 +258,10 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     }
 
 
+     /*
+    *Function to get the user Favourite Places in .
+    * @var array.
+    */
     public function getFavoritePlacesAttribute()
     {
 
@@ -210,7 +278,10 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     }
 
 
-
+    /*
+    *Function to get the user Favourite Hotels in .
+    * @var array.
+    */
     public function getFavoriteHotelsAttribute()
     {
 
@@ -225,6 +296,10 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     }
 
 
+    /*
+    *Function to get the user Favourite Meals in .
+    * @var array.
+    */
     public function getFavoriteMealsAttribute()
     {
 
@@ -238,6 +313,10 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
     }
 
 
+    /*
+    *Function to send a password reset notification to the user .
+    * 
+    */
     public function sendPasswordResetNotification($token)
 {
     $this->notify(new PasswordReset($token));
