@@ -92,8 +92,8 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
 		$ivpath = 'iv_'.$usermail.'.lic';
         $keypath ='encryption_key_'.$usermail.'.lic';
 
-        Storage::disk('local')->put($ivpath, $iv);
-        Storage::disk('local')->put($keypath, $encryption_key);
+        Storage::disk('secrets')->put($ivpath, $iv);
+        Storage::disk('secrets')->put($keypath, $encryption_key);
         $this->wallet_balance = $amount;
         $this->wallet_currency = $wallet_currency;
         $this->save();
@@ -114,15 +114,15 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         
         $cipher = "aes-256-cbc"; 
         $encrypted_data = $this->wallet_balance;
-        if(!Storage::disk('local')->exists($keypath) Or !Storage::disk('local')->exists($ivpath))
+        if(!Storage::disk('secrets')->exists($keypath) Or !Storage::disk('secrets')->exists($ivpath))
         {
             $respons = array("ResponseCode"=>"200","Result"=>"false","ResponseMsg"=>"Wallet Decryption Failed!");
             return $respons;
         }
         else
         {
-            $encryption_key = base64_decode(Storage::disk('local')->get($keypath));
-            $iv = base64_decode(Storage::disk('local')->get($ivpath));
+            $encryption_key = base64_decode(Storage::disk('secrets')->get($keypath));
+            $iv = base64_decode(Storage::disk('secrets')->get($ivpath));
             
         }
         $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, $iv); 
@@ -154,15 +154,15 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         
         $cipher = "aes-256-cbc"; 
         $encrypted_data = $this->wallet_balance;
-        if(!Storage::disk('local')->exists($keypath) Or !Storage::disk('local')->exists($ivpath))
+        if(!Storage::disk('secrets')->exists($keypath) Or !Storage::disk('secrets')->exists($ivpath))
         {
             $respons = array("ResponseCode"=>"200","Result"=>"false","ResponseMsg"=>"Wallet Decryption Failed!");
             return $respons;
         }
         else
         {
-            $encryption_key = base64_decode(Storage::disk('local')->get($keypath));
-            $iv = base64_decode(Storage::disk('local')->get($ivpath));
+            $encryption_key = base64_decode(Storage::disk('secrets')->get($keypath));
+            $iv = base64_decode(Storage::disk('secrets')->get($ivpath));
             
         }
         $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, $iv); 
@@ -192,15 +192,15 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         
         $cipher = "aes-256-cbc"; 
         $encrypted_data = $this->wallet_balance;
-        if(!Storage::disk('local')->exists($keypath) Or !Storage::disk('local')->exists($ivpath))
+        if(!Storage::disk('secrets')->exists($keypath) Or !Storage::disk('secrets')->exists($ivpath))
         {
             $respons = array("ResponseCode"=>"200","Result"=>"false","ResponseMsg"=>"Wallet Decryption Failed!");
             return $respons;
         }
         else
         {
-            $encryption_key = base64_decode(Storage::disk('local')->get($keypath));
-            $iv = base64_decode(Storage::disk('local')->get($ivpath));
+            $encryption_key = base64_decode(Storage::disk('secrets')->get($keypath));
+            $iv = base64_decode(Storage::disk('secrets')->get($ivpath));
             
         }
         $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, $iv); 
@@ -221,15 +221,15 @@ class User extends Authenticatable implements Commentator ,MustVerifyEmail
         
         $cipher = "aes-256-cbc"; 
         $encrypted_data = $this->wallet_currency;
-        if(!Storage::disk('local')->exists($keypath) Or !Storage::disk('local')->exists($ivpath))
+        if(!Storage::disk('secrets')->exists($keypath) Or !Storage::disk('secrets')->exists($ivpath))
         {
             $respons = array("ResponseCode"=>"200","Result"=>"false","ResponseMsg"=>"Wallet Decryption Failed!");
             return $respons;
         }
         else
         {
-            $encryption_key = base64_decode(Storage::disk('local')->get($keypath));
-            $iv = base64_decode(Storage::disk('local')->get($ivpath));
+            $encryption_key = base64_decode(Storage::disk('secrets')->get($keypath));
+            $iv = base64_decode(Storage::disk('secrets')->get($ivpath));
             
         }
         $decrypted_data = openssl_decrypt($encrypted_data, $cipher, $encryption_key, 0, $iv); 

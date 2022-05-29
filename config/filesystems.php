@@ -42,6 +42,10 @@ return [
             'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
+        'secrets' => [
+            'driver' => 'local',
+            'root'   => storage_path('secrets'),
+        ],
 
         'images' => [
             'driver' => 'local',
